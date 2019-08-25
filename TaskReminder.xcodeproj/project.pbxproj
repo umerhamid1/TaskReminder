@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3D90445623127FC1001A590D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D90445523127FC1001A590D /* AppDelegate.swift */; };
-		3D90445823127FC1001A590D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D90445723127FC1001A590D /* ViewController.swift */; };
+		3D90445823127FC1001A590D /* ToDoListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D90445723127FC1001A590D /* ToDoListViewController.swift */; };
 		3D90445B23127FC1001A590D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3D90445923127FC1001A590D /* Main.storyboard */; };
 		3D90445D23127FC4001A590D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3D90445C23127FC4001A590D /* Assets.xcassets */; };
 		3D90446023127FC4001A590D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3D90445E23127FC4001A590D /* LaunchScreen.storyboard */; };
@@ -17,7 +17,7 @@
 /* Begin PBXFileReference section */
 		3D90445223127FC0001A590D /* TaskReminder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TaskReminder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D90445523127FC1001A590D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		3D90445723127FC1001A590D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		3D90445723127FC1001A590D /* ToDoListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoListViewController.swift; sourceTree = "<group>"; };
 		3D90445A23127FC1001A590D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		3D90445C23127FC4001A590D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3D90445F23127FC4001A590D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -55,7 +55,7 @@
 			isa = PBXGroup;
 			children = (
 				3D90445523127FC1001A590D /* AppDelegate.swift */,
-				3D90445723127FC1001A590D /* ViewController.swift */,
+				3D90445723127FC1001A590D /* ToDoListViewController.swift */,
 				3D90445923127FC1001A590D /* Main.storyboard */,
 				3D90445C23127FC4001A590D /* Assets.xcassets */,
 				3D90445E23127FC4001A590D /* LaunchScreen.storyboard */,
@@ -135,7 +135,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3D90445823127FC1001A590D /* ViewController.swift in Sources */,
+				3D90445823127FC1001A590D /* ToDoListViewController.swift in Sources */,
 				3D90445623127FC1001A590D /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -285,6 +285,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 56NZPYU7N6;
 				INFOPLIST_FILE = TaskReminder/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -303,6 +304,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 56NZPYU7N6;
 				INFOPLIST_FILE = TaskReminder/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
