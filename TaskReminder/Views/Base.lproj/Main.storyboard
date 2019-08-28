@@ -20,11 +20,11 @@
                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="separatorColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="checkmark" indentationWidth="10" reuseIdentifier="toDoListCell" id="EZr-J0-Ew4">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="toDoListCell" id="EZr-J0-Ew4">
                                 <rect key="frame" x="0.0" y="28" width="414" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="EZr-J0-Ew4" id="PUK-rQ-Aor">
-                                    <rect key="frame" x="0.0" y="0.0" width="370" height="43.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <color key="tintColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -38,7 +38,13 @@
                             <outlet property="delegate" destination="jv1-vc-Faj" id="Zxj-JM-TIC"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Working List" id="gKH-kh-OER"/>
+                    <navigationItem key="navigationItem" title="Working List" id="gKH-kh-OER">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="CE1-qV-Aud">
+                            <connections>
+                                <action selector="buttonPressed:" destination="jv1-vc-Faj" id="JI5-Z7-4Ga"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sNC-FL-wda" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
