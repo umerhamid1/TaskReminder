@@ -7,14 +7,20 @@
 //
 
 import UIKit
+import CoreData
 
-class ToDoListViewController: UITableViewController {
+class ToDoListViewController: UITableViewController  {
 
+    
+ 
+    
+    
     var task = [Items]()
+     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
-    let def = UserDefaults.standard
+  //  let def = UserDefaults.standard
     
-    let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Item.plist")
+  //  let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Item.plist")
     
     
     
@@ -22,14 +28,16 @@ class ToDoListViewController: UITableViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
-        let item = Items()
-        item.item = "watching Movie"
-        task.append(item)
+       
         
 //        if let i =  def.array(forKey: "ToDoList") as? [Items] {
 //            task = i
 //        }
         loadData()
+        
+        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
+        
+        
     }
     
     
@@ -43,7 +51,7 @@ class ToDoListViewController: UITableViewController {
         
         let i = task[indexPath.row]
        // cell.textLabel?.text = task[cell]
-        cell.textLabel?.text = i.item
+        cell.textLabel?.text = i.task
       //1  tableView.reloadData()
         
 //        if task[indexPath.row].done == true{
@@ -67,7 +75,9 @@ class ToDoListViewController: UITableViewController {
 //        task[indexPath.row].done = true
 //        }
         
-        
+      //  task[indexPath.row].setValue("completed", forKey: "done") // update  data
+      //  context.delete(task[indexPath.row]) // delete item in database
+      //  task.remove(at: indexPath.row) // deleete item from temporary area
         task[indexPath.row].done = !task[indexPath.row].done
         saveData()
         
@@ -91,8 +101,11 @@ class ToDoListViewController: UITableViewController {
         
        // let alertAction = UIAlertAction(title: "Add", style: .default, handler: )
         let alertAction = UIAlertAction(title: "Add", style: .default) { (UIAlertAction) in
-            let i = Items()
-            i.item = data.text!
+            
+           
+            let i = Items(context: self.context)
+            i.task = data.text!
+            i.done = false
             self.task.append(i)
             //self.def.set(self.task, forKey: "ToDoList")
             
@@ -117,30 +130,75 @@ class ToDoListViewController: UITableViewController {
     }
     
     func saveData(){
-        let encoder = PropertyListEncoder()
         do{
-            let data = try encoder.encode(task)
-            try data.write(to: path!)
+           try self.context.save()
         }catch{
             print("encoding error : \(error)")
         }
         tableView.reloadData()
     }
     
-    func loadData(){
+    func loadData(with fetchData : NSFetchRequest<Items> = Items.fetchRequest()){
+
+       // let fetchData : NSFetchRequest<Items> = Items.fetchRequest()
         
-        if let data = try? Data(contentsOf: path!){
-            let decoder = PropertyListDecoder()
             do{
-                
-                task =  try decoder.decode([Items].self, from: data)
-            }catch {
-                print("decoding error : \(error)")
+              task =  try context.fetch(fetchData)
             }
-        }
+            catch{
+                print("ERROR DURING LOADING : \(error)")
+            }
         
+        tableView.reloadData()
+        }
+    
+        
+}
+
+extension ToDoListViewController : UISearchBarDelegate {
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        let fetchdata : NSFetchRequest<Items> = Items.fetchRequest()
+        
+        fetchdata.predicate = NSPredicate(format: "task CONTAINS[cd] %@", searchBar.text!)
+        
+        
+        
+        fetchdata.sortDescriptors = [NSSortDescriptor(key: "task", ascending: true)]
+        
+        loadData(with : fetchdata)
+        
+
+        
+//        do{
+//            task =  try context.fetch(fetchdata)
+//        }
+//        catch{
+//            print("ERROR DURING LOADING : \(error)")
+//        }
+//
+//        tableView.reloadData()
+        
+        
+        
+        
+        
+        // print(searchBar.text!)
         
     }
     
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+       if searchBar.text!.count == 0 {
+        
+        loadData()
+        
+        DispatchQueue.main.async {
+            searchBar.resignFirstResponder()
+        }
+        
+        
+        
+        }
+    }
+    
 }
-
