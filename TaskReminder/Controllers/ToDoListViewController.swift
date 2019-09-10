@@ -18,6 +18,15 @@ class ToDoListViewController: UITableViewController  {
     var task = [Items]()
      let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
+    var selectCategory : Category? {
+        didSet{
+            
+            loadData()
+            
+
+        }
+    }
+    
   //  let def = UserDefaults.standard
     
   //  let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Item.plist")
@@ -33,8 +42,6 @@ class ToDoListViewController: UITableViewController  {
 //        if let i =  def.array(forKey: "ToDoList") as? [Items] {
 //            task = i
 //        }
-        loadData()
-        
         print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         
         
@@ -106,6 +113,7 @@ class ToDoListViewController: UITableViewController  {
             let i = Items(context: self.context)
             i.task = data.text!
             i.done = false
+            i.parentsCategory = self.selectCategory
             self.task.append(i)
             //self.def.set(self.task, forKey: "ToDoList")
             
@@ -138,9 +146,21 @@ class ToDoListViewController: UITableViewController  {
         tableView.reloadData()
     }
     
-    func loadData(with fetchData : NSFetchRequest<Items> = Items.fetchRequest()){
+    func loadData(with fetchData : NSFetchRequest<Items> = Items.fetchRequest() , predicate : NSPredicate? = nil){
 
        // let fetchData : NSFetchRequest<Items> = Items.fetchRequest()
+        
+        let data = NSPredicate(format: "parentsCategory.work MATCHES %@",  selectCategory!.work!)
+        
+        
+        if let compoundPrediate = predicate {
+            fetchData.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [data, compoundPrediate])
+        }else{
+            fetchData.predicate = data
+        }
+        
+        
+        //fetchData.predicate = data
         
             do{
               task =  try context.fetch(fetchData)
@@ -160,13 +180,13 @@ extension ToDoListViewController : UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         let fetchdata : NSFetchRequest<Items> = Items.fetchRequest()
         
-        fetchdata.predicate = NSPredicate(format: "task CONTAINS[cd] %@", searchBar.text!)
+        let predicate = NSPredicate(format: "task CONTAINS[cd] %@", searchBar.text!)
         
         
         
         fetchdata.sortDescriptors = [NSSortDescriptor(key: "task", ascending: true)]
         
-        loadData(with : fetchdata)
+        loadData(with : fetchdata , predicate: predicate)
         
 
         
