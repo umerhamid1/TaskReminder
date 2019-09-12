@@ -7,21 +7,21 @@
 //
 
 import UIKit
-import CoreData
-
+//import CoreData
+import RealmSwift
 class ToDoListViewController: UITableViewController  {
 
-    
+    let realm = try! Realm()
  
     
     
-    var task = [Items]()
-     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    var task : Results<Items>?
+    // let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     var selectCategory : Category? {
         didSet{
             
-            loadData()
+           loadData()
             
 
         }
@@ -49,16 +49,24 @@ class ToDoListViewController: UITableViewController  {
     
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return task.count
+        
+        
+        return task?.count ?? 1
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "toDoListCell", for: indexPath)
         
-        let i = task[indexPath.row]
+       if let i = task?[indexPath.row] {
+            cell.textLabel?.text = i.task
+            cell.accessoryType = i.done ? .checkmark : .none
+       }else{
+            cell.textLabel?.text = "no Data Added"
+        }
+        //?? "daata is not added"
        // cell.textLabel?.text = task[cell]
-        cell.textLabel?.text = i.task
+        
       //1  tableView.reloadData()
         
 //        if task[indexPath.row].done == true{
@@ -67,14 +75,26 @@ class ToDoListViewController: UITableViewController  {
 //            cell.accessoryType = .none
 //
 //        }
-        cell.accessoryType = i.done ? .checkmark : .none
+        
         
         
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        print(task[indexPath.row])
+
+        if let task = task?[indexPath.row]{
+            do{
+                try realm.write {
+                    //realm.delete(task) for delete data
+                    task.done = !task.done
+            }
+            }catch{
+                print("error while saving done \(error)")
+            }
+        }
+        
+        //        print(task[indexPath.row])
 //
 //     if   task[indexPath.row].done == true {
 //            task[indexPath.row].done = false
@@ -85,10 +105,10 @@ class ToDoListViewController: UITableViewController  {
       //  task[indexPath.row].setValue("completed", forKey: "done") // update  data
       //  context.delete(task[indexPath.row]) // delete item in database
       //  task.remove(at: indexPath.row) // deleete item from temporary area
-        task[indexPath.row].done = !task[indexPath.row].done
-        saveData()
+       // task[indexPath.row].done = !task[indexPath.row].done
+       // saveData()
         
-        //tableView.reloadData()
+      tableView.reloadData()
         
         
 //        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark{
@@ -108,16 +128,26 @@ class ToDoListViewController: UITableViewController  {
         
        // let alertAction = UIAlertAction(title: "Add", style: .default, handler: )
         let alertAction = UIAlertAction(title: "Add", style: .default) { (UIAlertAction) in
-            
+            if let select = self.selectCategory{
+                do{
+                    try self.realm.write {
+                        let i = Items()
+                        i.task = data.text!
+                        i.done = false
+                        i.createDate = Date()
+                        select.items.append(i)
+                    }
+                }catch{
+                    print("error during save data in Items : \(error)")
+                }
+            }
            
-            let i = Items(context: self.context)
-            i.task = data.text!
-            i.done = false
-            i.parentsCategory = self.selectCategory
-            self.task.append(i)
+           // i.parentsCategory = self.selectCategory
+          //  self.task.append(i)
             //self.def.set(self.task, forKey: "ToDoList")
             
-          self.saveData()
+            self.tableView.reloadData()
+            
         }
 
        
@@ -137,59 +167,68 @@ class ToDoListViewController: UITableViewController  {
         
     }
     
-    func saveData(){
+    func saveData(items : Items){
         do{
-           try self.context.save()
+           try realm.write {
+            
+                realm.add(items)
+            }
         }catch{
             print("encoding error : \(error)")
         }
         tableView.reloadData()
     }
     
-    func loadData(with fetchData : NSFetchRequest<Items> = Items.fetchRequest() , predicate : NSPredicate? = nil){
+    func loadData(){
 
+        
+        task = selectCategory?.items.sorted(byKeyPath: "task", ascending: true)
+        
        // let fetchData : NSFetchRequest<Items> = Items.fetchRequest()
-        
-        let data = NSPredicate(format: "parentsCategory.work MATCHES %@",  selectCategory!.work!)
-        
-        
-        if let compoundPrediate = predicate {
-            fetchData.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [data, compoundPrediate])
-        }else{
-            fetchData.predicate = data
-        }
-        
-        
+
+//        let data = NSPredicate(format: "parentsCategory.work MATCHES %@",  selectCategory!.work!)
+
+//
+//        if let compoundPrediate = predicate {
+//            fetchData.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [data, compoundPrediate])
+//        }else{
+//            fetchData.predicate = data
+//        }
+
+
         //fetchData.predicate = data
-        
-            do{
-              task =  try context.fetch(fetchData)
-            }
-            catch{
-                print("ERROR DURING LOADING : \(error)")
-            }
-        
+
+//            do{
+//              task =  try context.fetch(fetchData)
+//            }
+//            catch{
+//                print("ERROR DURING LOADING : \(error)")
+//            }
+
         tableView.reloadData()
         }
+
     
-        
 }
 
 extension ToDoListViewController : UISearchBarDelegate {
-    
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        let fetchdata : NSFetchRequest<Items> = Items.fetchRequest()
-        
-        let predicate = NSPredicate(format: "task CONTAINS[cd] %@", searchBar.text!)
-        
-        
-        
-        fetchdata.sortDescriptors = [NSSortDescriptor(key: "task", ascending: true)]
-        
-        loadData(with : fetchdata , predicate: predicate)
-        
 
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         
+        task = task?.filter("task CONTAINS[cd] %@", searchBar.text! ).sorted(byKeyPath: "createDate", ascending: true)
+        
+        //let fetchdata : NSFetchRequest<Items> = Items.fetchRequest()
+
+        //let predicate = NSPredicate(format: "task CONTAINS[cd] %@", searchBar.text!)
+
+
+
+        //fetchdata.sortDescriptors = [NSSortDescriptor(key: "task", ascending: true)]
+
+        //loadData(with : fetchdata , predicate: predicate)
+
+
+
 //        do{
 //            task =  try context.fetch(fetchdata)
 //        }
@@ -197,28 +236,28 @@ extension ToDoListViewController : UISearchBarDelegate {
 //            print("ERROR DURING LOADING : \(error)")
 //        }
 //
-//        tableView.reloadData()
-        
-        
-        
-        
-        
+       tableView.reloadData()
+
+
+
+
+
         // print(searchBar.text!)
-        
+
     }
-    
+
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
        if searchBar.text!.count == 0 {
-        
+
         loadData()
-        
+
         DispatchQueue.main.async {
             searchBar.resignFirstResponder()
         }
-        
-        
-        
+
+
+
         }
     }
-    
+
 }
